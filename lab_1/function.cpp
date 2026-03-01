@@ -11,7 +11,7 @@
 
 namespace fs = std::filesystem;
 
-class matrix{
+class matrix{ 
     size_t _rows = 0;
     size_t _cols = 0;
     std::vector<std::vector<float>> _data;
@@ -71,7 +71,7 @@ class matrix{
     }
 };
 
-matrix matrix_multiplication(const matrix &matrix1, const matrix &matrix2){ 
+matrix matrix_multiplication(const matrix &matrix1, const matrix &matrix2){ //умножение матриц
     if (!(matrix1.getCols() == matrix2.getRows())){
         throw std::invalid_argument("Matrices are not suitable for multiplication");
     }
@@ -94,14 +94,14 @@ matrix matrix_multiplication(const matrix &matrix1, const matrix &matrix2){
     return result;
 }
 
-matrix multiplication_square_matrices(const matrix &matrix1, const matrix &matrix2){
+matrix multiplication_square_matrices(const matrix &matrix1, const matrix &matrix2){ // умножение квадратных матриц
     if (matrix1.getRows()!=matrix1.getCols()||matrix2.getRows()!=matrix2.getCols()){
         throw std::invalid_argument("Matrices are not square");
     }
     return matrix_multiplication(matrix1, matrix2);
 }
 
-double measure_time(const matrix& matr1, const matrix& matr2, matrix& result) {
+double measure_time(const matrix& matr1, const matrix& matr2, matrix& result) {//подсчет времени
     auto start = std::chrono::high_resolution_clock::now();
     
     result = multiplication_square_matrices(matr1, matr2);
@@ -109,10 +109,10 @@ double measure_time(const matrix& matr1, const matrix& matr2, matrix& result) {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
     
-    return duration.count() / 1000000.0; // returns seconds
+    return duration.count() / 1000000.0; 
 }
 
-matrix read_matrix_from_file(const std::string& filename) {
+matrix read_matrix_from_file(const std::string& filename) {//считывание матрицы из файла
     std::ifstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open file: " + filename);
@@ -140,7 +140,7 @@ matrix read_matrix_from_file(const std::string& filename) {
     return matrix(rows, cols, data);
 }
 
-void print_matrix(const matrix& matr){
+void print_matrix(const matrix& matr){// вывод матрицы в терминал
     for (size_t i = 0; i < matr.getRows(); ++i) {
         for (size_t j = 0; j < matr.getCols(); ++j) {  
             std::cout << matr.getElement(i, j) << " ";
@@ -149,7 +149,7 @@ void print_matrix(const matrix& matr){
     }
 }
 
-void write_matrix_to_file(const matrix& matr, const std::string& filename, int numberOperation, double time) {
+void write_matrix_to_file(const matrix& matr, const std::string& filename, int numberOperation, double time) {//запись матрицы в файл
     std::ofstream file(filename);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to create file: " + filename);
@@ -170,7 +170,7 @@ void write_matrix_to_file(const matrix& matr, const std::string& filename, int n
     file.close();
 }
 
-bool verificationOnPython(std::string matrix1_file,std::string matrix2_file, std::string result_file){
+bool verificationOnPython(std::string matrix1_file,std::string matrix2_file, std::string result_file){//проверка результатов на Python
     std::cout << "\nRunning Python verification..." << std::endl;
     std::string base_path = "../../../Lab_1/";
     std::string python_script =base_path+"func.py";
@@ -182,7 +182,7 @@ bool verificationOnPython(std::string matrix1_file,std::string matrix2_file, std
     return verif;
 }
 
-std::string readPath(){
+std::string readPath(){//считывание пути к файлу
     std::string pathToFile;
     std::getline(std::cin, pathToFile);
     if (!pathToFile.empty() && pathToFile.front() == '"' && pathToFile.back() == '"') {
