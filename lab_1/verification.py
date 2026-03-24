@@ -4,10 +4,8 @@ import sys
 def read_matrix(filename):
     """Чтение матрицы из файла в формате: rows cols\n data..."""
     with open(filename, 'r') as f:
-        # Читаем размеры
         rows, cols = map(int, f.readline().split())
         
-        # Читаем данные
         matrix = []
         for _ in range(rows):
             row = list(map(float, f.readline().split()))
@@ -16,16 +14,6 @@ def read_matrix(filename):
             matrix.append(row)
     
     return np.array(matrix)
-
-def write_matrix(filename, matrix):
-    """Запись матрицы в файл"""
-    with open(filename, 'w') as f:
-        rows, cols = matrix.shape
-        f.write(f"{rows} {cols}\n")
-        for i in range(rows):
-            for j in range(cols):
-                f.write(f"{matrix[i][j]:.6f} ")
-            f.write("\n")
 
 def verify_multiplication(file1, file2, result_file):
     """Проверка умножения матриц"""

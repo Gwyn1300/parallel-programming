@@ -1,5 +1,0 @@
-2 2
-19 22 
-43 50 
-Total operations:~12
-Execution time: 0.000001000 seconds

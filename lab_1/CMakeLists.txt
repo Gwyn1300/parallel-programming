@@ -7,6 +7,13 @@ project("Lab1" CXX)
 
 add_executable("Lab1"
 "function.cpp"
+"function.h"
+"main.cpp"
+"matrix.h"
+"matrix.cpp"
 "verification.py"
+"dataProcessing.py"
+"globals.h"
+"globals.cpp"
 )
 
