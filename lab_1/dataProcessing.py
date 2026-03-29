@@ -2,25 +2,21 @@ import csv
 import os
 import sys
 
-def saveData(size: int, numberOperation: int, time: float, csv_path: str) -> None:
+def saveData(size: int, numberOperation: int, time: float, num_threads:int, csv_path: str) -> None:
     """
     Сохранить данные в CSV-файл. Если файл существует - дозаписывает,
     если нет - создает новый с заголовком.
     """
     try:
-        # Проверяем, существует ли файл
         file_exists = os.path.isfile(csv_path)
         
-        # Открываем файл в режиме добавления (append)
         with open(csv_path, mode="a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             
-            # Если файл только что создан (не существовал), пишем заголовок
             if not file_exists:
-                writer.writerow(["Size", "Number Operation", "Time (seconds)"])
+                writer.writerow(["Number threads","Size", "Number Operation", "Time (seconds)"])
             
-            # Записываем данные
-            writer.writerow([size, numberOperation, time])
+            writer.writerow([num_threads, size, numberOperation, time])
             
         action = "дозаписаны" if file_exists else "создан"
         print(f"Данные успешно {action} в файл: {csv_path}")
@@ -33,9 +29,9 @@ def saveData(size: int, numberOperation: int, time: float, csv_path: str) -> Non
         raise
 
 if __name__ == "__main__":
-    if len(sys.argv) == 5:
-        size, numberOperation, time, csv_path = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-        success = saveData(size, numberOperation, time, csv_path)
+    if len(sys.argv) == 6:
+        size, numberOperation, time, num_threads, csv_path = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+        success = saveData(size, numberOperation, time, num_threads, csv_path)
         sys.exit(0 if success else 1)
     
     else:

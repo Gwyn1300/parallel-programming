@@ -2,9 +2,11 @@
 #include "globals.h"
 
 int main(){
-    creatMatrixForExperement();
+    /*creatMatrixForExperement();
     for(size_t i = 0; i<MATRIX.size(); i+=2){
-       experiment(MATRIX[i], MATRIX[i+1]);
-    }
+        for(int j = 1; j<=8; j++){
+            experiment(MATRIX[i], MATRIX[i+1], j);
+        }
+    }*/
     createGraphsFromCSV(BASEPATH+"report/data.csv");
 }

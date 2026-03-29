@@ -17,3 +17,15 @@ add_executable("Lab1"
 "globals.cpp"
 )
 
+if(MINGW)
+    target_compile_options(Lab1 PRIVATE -fopenmp)
+    target_link_options(Lab1 PRIVATE -fopenmp)
+    target_link_libraries(Lab1 PRIVATE gomp)
+    target_compile_definitions(Lab1 PRIVATE _OPENMP)
+    message(STATUS "OpenMP manually enabled for MinGW")
+else()
+    find_package(OpenMP)
+    if(OpenMP_CXX_FOUND)
+        target_link_libraries(Lab1 PUBLIC OpenMP::OpenMP_CXX)
+    endif()
+endif()

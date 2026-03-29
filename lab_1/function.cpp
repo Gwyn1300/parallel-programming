@@ -8,8 +8,36 @@
 #include <random>
 #include "function.h"
 #include "globals.h"
+#include <omp.h>
                            
 namespace fs = std::filesystem;
+
+matrix matrix_multiplication_OMP(const matrix &matrix1, const matrix &matrix2, int num_threads){ //умножение матриц
+    omp_set_num_threads(num_threads);
+
+    if (!(matrix1.getCols() == matrix2.getRows())){
+        throw std::invalid_argument("Matrices are not suitable for multiplication");
+    }
+    
+    size_t rows1 = matrix1.getRows();
+    size_t cols1 = matrix1.getCols();
+    size_t cols2 = matrix2.getCols();
+    matrix result(rows1, cols2);
+    
+    #pragma omp parallel for
+    for (size_t i = 0; i < rows1; ++i) {
+        for (size_t k = 0; k < cols1; ++k) {
+            double aik = matrix1.getElement(i, k);
+            for (size_t j = 0; j < cols2; ++j) {
+                double current = result.getElement(i, j);
+                result.setElement(i, j, current + aik * matrix2.getElement(k, j));
+            }
+        }
+    }
+    
+    return result;
+}
+
 
 matrix matrix_multiplication(const matrix &matrix1, const matrix &matrix2){ //умножение матриц
     if (!(matrix1.getCols() == matrix2.getRows())){
@@ -17,34 +45,34 @@ matrix matrix_multiplication(const matrix &matrix1, const matrix &matrix2){ //у
     }
     
     size_t rows1 = matrix1.getRows();
-    size_t cols1_rows2 = matrix1.getCols();
+    size_t cols1 = matrix1.getCols();
     size_t cols2 = matrix2.getCols();
-    matrix result = matrix(rows1, cols2);
+    matrix result(rows1, cols2);
     
-    for (size_t i = 0; i < rows1; ++i){
-        for (size_t j = 0; j < cols2; ++j){
-            double value = 0;
-            for (size_t k = 0; k < cols1_rows2; ++k){
-                value += matrix1.getElement(i, k) * matrix2.getElement(k, j);
+    for (size_t i = 0; i < rows1; ++i) {
+        for (size_t k = 0; k < cols1; ++k) {
+            double aik = matrix1.getElement(i, k);
+            for (size_t j = 0; j < cols2; ++j) {
+                double current = result.getElement(i, j);
+                result.setElement(i, j, current + aik * matrix2.getElement(k, j));
             }
-            result.setElement(i, j, value);
         }
     }
-
+    
     return result;
 }
 
-matrix multiplication_square_matrices(const matrix &matrix1, const matrix &matrix2){ // умножение квадратных матриц
+matrix multiplication_square_matrices(const matrix &matrix1, const matrix &matrix2, int num_threads){ // умножение квадратных матриц
     if (matrix1.getRows()!=matrix1.getCols()||matrix2.getRows()!=matrix2.getCols()){
         throw std::invalid_argument("Matrices are not square");
     }
-    return matrix_multiplication(matrix1, matrix2);
+    return matrix_multiplication_OMP(matrix1, matrix2, num_threads);
 }
 
-double measure_time(const matrix& matr1, const matrix& matr2, matrix& result) {//подсчет времени
+double measure_time(const matrix& matr1, const matrix& matr2, matrix& result, int num_threads) {//подсчет времени
     auto start = std::chrono::high_resolution_clock::now();
     
-    result = multiplication_square_matrices(matr1, matr2);
+    result = multiplication_square_matrices(matr1, matr2, num_threads);
     
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -152,11 +180,13 @@ matrix randomMatrix(const size_t rows, const size_t cols){
         return matrix();
     }
     matrix randMatr(rows, cols);
+    #pragma omp parallel for
     for(size_t i = 0; i<rows; ++i){
         for (size_t j = 0; j<cols; ++j){
             randMatr.setElement(i,j,randomElement());
         }
     }
+    std::cout<<"Creat matrix"<<rows<<"x"<<cols<<'\n';
     return randMatr;
 }
 
@@ -179,14 +209,15 @@ void creatMatrixForExperement(){
     write_matrix_to_file(randomMatrix(s_2000,s_2000), MATRIX[9]);
 }
 
-bool creatCSVFile(std::string size, size_t numberOperation, double time, std::string csvPath){
+bool creatCSVFile(std::string size, size_t numberOperation, double time, int num_threads, std::string csvPath){
 
     std::cout << "\nRunning Python verification..." << std::endl;
     std::string python_script = BASEPATH+"dataProcessing.py";
     std::string python_cmd = "python \"" + python_script + "\" \"" + 
                         size + "\" \"" +
                         std::to_string(numberOperation) + "\" \"" + 
-                        std::to_string(time) + "\" \"" + 
+                        std::to_string(time) + "\" \"" +
+                        std::to_string(num_threads) + "\" \"" + 
                         csvPath +"\"";
     int verif = system(python_cmd.c_str());
     return verif;
@@ -207,13 +238,13 @@ bool createGraphsFromCSV(std::string csv_path) {
     return (result == 0);
 }
 
-void experiment(std::string matrix1_file,std::string matrix2_file){
+void experiment(std::string matrix1_file,std::string matrix2_file, int num_threads){
     try {
         matrix matr1 = read_matrix_from_file(matrix1_file);
         matrix matr2 = read_matrix_from_file(matrix2_file);
         matrix result;
     
-        double time = measure_time(matr1, matr2, result);
+        double time = measure_time(matr1, matr2, result, num_threads);
         size_t numberOperation = matr1.getRows()* (2*matr1.getCols() -1)* matr2.getCols(); 
         
         std::string size = std::to_string(matr1.getRows());
@@ -228,7 +259,7 @@ void experiment(std::string matrix1_file,std::string matrix2_file){
         else {
             std::cout << "Verification failed!" << std::endl;
         } 
-        if(creatCSVFile(size, numberOperation, time, BASEPATH+"report/data.csv")){
+        if(creatCSVFile(size, numberOperation, time, num_threads, BASEPATH+"report/data.csv")){
             std::cout << "Data added successfully!" << std::endl;
         }
         else{
