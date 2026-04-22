@@ -2,36 +2,70 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "debug",
-            "generator": "MinGW Makefiles",
-            "binaryDir": "${sourceDir}/build/debug",
+            "name": "msvc-debug",
+            "displayName": "MSVC Debug",
+            "description": "MSVC Debug configuration",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/msvc/debug",
+            "architecture": "x64",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_STANDARD": "20"
             }
         },
         {
-            "name": "GCC 14.2.0 x86_64-w64-mingw32 (ucrt64)",
-            "displayName": "GCC 14.2.0 x86_64-w64-mingw32 (ucrt64)",
-            "description": "Using compilers: C = C:\\msys64\\ucrt64\\bin\\gcc.exe, CXX = C:\\msys64\\ucrt64\\bin\\g++.exe",
-            "generator": "MinGW Makefiles",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "name": "msvc-release",
+            "displayName": "MSVC Release",
+            "description": "MSVC Release configuration",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/msvc/release",
+            "architecture": "x64",
             "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-                "CMAKE_C_COMPILER": "C:/msys64/ucrt64/bin/gcc.exe",
-                "CMAKE_CXX_COMPILER": "C:/msys64/ucrt64/bin/g++.exe",
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_STANDARD": "20"
+            }
+        },
+        {
+            "name": "msvc-mpi-debug",
+            "displayName": "MSVC MPI Debug",
+            "description": "MSVC with MPI Debug configuration",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/msvc/mpi-debug",
+            "architecture": "x64",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_STANDARD": "20",
+                "MPI_CXX_COMPILER": "C:/Program Files (x86)/Microsoft MPI/bin/mpicxx.exe"
+            }
+        },
+        {
+            "name": "ninja-msvc",
+            "displayName": "Ninja MSVC",
+            "description": "Ninja with MSVC compiler",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/ninja",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_C_COMPILER": "cl.exe"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "build-pp",
-            "displayName": "Build pp",
-            "configurePreset": "debug",
-            "targets": [
-                "Lab1"
-            ]
+            "name": "build-msvc-debug",
+            "displayName": "Build MSVC Debug",
+            "configurePreset": "msvc-debug"
+        },
+        {
+            "name": "build-msvc-release",
+            "displayName": "Build MSVC Release",
+            "configurePreset": "msvc-release"
+        },
+        {
+            "name": "build-msvc-mpi",
+            "displayName": "Build MSVC MPI",
+            "configurePreset": "msvc-mpi-debug"
         }
-
     ]
 }

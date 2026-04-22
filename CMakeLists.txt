@@ -4,6 +4,9 @@ project("AlgorithmsAndDataStructures" CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Find MPI for Windows
+find_package(MPI REQUIRED)
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -15,4 +18,4 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   add_compile_options("/W4" "/utf-8")
 endif()
 
-add_subdirectory("Lab_1")
+add_subdirectory("Lab_3")
